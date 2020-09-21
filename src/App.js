@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import NavBar from "./components/navbar";
+import { Route } from "react-router-dom";
+import Dashboard from "./components/admin/dashboard";
+import Beers from "./components/beers";
+import LoginForm from "./components/loginForm";
+import { properties } from "./utils/properties.js";
+import DisplayData from "./components/common/displayData";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    user: "p",
+  };
+
+  updateUser = (user) => {
+    console.log(user);
+    this.setState({ user: user });
+  };
+
+  render() {
+    return (
+      <React.Fragment>
+        <NavBar user={this.state.user} />
+        <div className="content">
+          <Route
+            path="/login"
+            render={(props) => (
+              <LoginForm {...props} updateUser={this.updateUser} />
+            )}
+          ></Route>
+          <Route
+            path="/all-beers"
+            render={(props) => (
+              <Beers
+                {...props}
+                uri={properties.uris.allBeersUri}
+                headings={properties.allBeersColumns}
+              />
+            )}
+          ></Route>
+          <Route
+            path="/tasted-beers"
+            render={(props) => (
+              <Beers
+                {...props}
+                uri={properties.uris.tastedBeersUri}
+                headings={properties.tastedBeersColumns}
+              />
+            )}
+          ></Route>
+          <Route path="/new-arrivals" component={Dashboard}></Route>
+          <Route path="/table" component={DisplayData}></Route>
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 export default App;
