@@ -1,13 +1,13 @@
 import React from "react";
 
 const ListGroup = (props) => {
-  console.log(props);
-  const styles = ["Lager", "Stout", "Ale"];
+  const styles = ["Lager", "stout", "Ale"];
 
   return (
     <ul className="list-group">
       {styles.map((style) => (
         <li
+          key={style}
           className={
             props.selectedStyle === style
               ? "list-group-item active"

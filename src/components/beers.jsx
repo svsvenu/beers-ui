@@ -4,10 +4,14 @@ import ListGroup from "./listGroup";
 import { DisplayTable } from "../components/common/displayTable";
 import { properties } from "../utils/properties";
 import { callHttpGet } from "../utils/http";
+import { BeerContext } from "./beerContextProvider";
 
 class Beers extends Component {
   async componentDidMount() {
     try {
+      if (localStorage.getItem("jwt") === "") {
+        this.props.history.push("/");
+      }
       const headers = {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       };
@@ -17,18 +21,20 @@ class Beers extends Component {
       if (response.status !== 200) {
         localStorage.removeItem("jwt");
         this.props.history.push("/login");
+        this.context.setAuthentication(false);
       }
 
-      console.log(response);
       let beers = response.data;
       const beersOnPage = paginate(beers, 1, properties.beersPerPage);
-      console.log(beersOnPage);
+
       this.setState({ beers: beers });
       this.setState({ beersOnPage: beersOnPage });
     } catch (ex) {
       console.log(ex.stack);
+      console.log("*********");
+      this.context.setAuthentication(false);
       localStorage.removeItem("jwt");
-      this.props.history.push("/login");
+      this.props.history.push("/");
     }
   }
 
@@ -53,14 +59,13 @@ class Beers extends Component {
   };
 
   render() {
-    console.log("rendered beers");
 
     const { selectedStyle, beers } = this.state;
 
     let beersToDisplay = selectedStyle
       ? this.state.beers.filter(
-          (beer) => beer.style === this.state.selectedStyle
-        )
+        (beer) => beer.style === this.state.selectedStyle
+      )
       : beers;
 
     /* let beersToDisplay = this.state.beers.filter(
@@ -83,10 +88,13 @@ class Beers extends Component {
           rowCount={beersToDisplay.length}
           onPageChange={this.onPageChange}
           currentPage={this.state.currentPage}
+          excludes={this.props.excludes}
         />
       </div>
     );
   }
 }
+
+Beers.contextType = BeerContext;
 
 export default Beers;

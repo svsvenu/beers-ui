@@ -1,16 +1,28 @@
 import React, { Component } from "react";
 import { Pagination } from "./pagination";
 import Like from "./like";
+import CheckBox from "./CheckBox";
 
 class DisplayTable extends Component {
   state = {};
+
+  processFields = () => {
+    let table = this.props.table;
+
+    table.map((row) => {
+      Object.keys(row).map((key) => {
+        console.log(row[key]);
+        row[key] = row[key] + "a";
+      });
+    });
+  };
   render() {
-    console.log(this.props.data);
-    let excludes = ["beerId"];
+    let excludes = this.props.excludes;
     let headings = this.props.headings;
 
     let table = this.props.table;
-    //  console.log(table);
+
+    //   this.processFields();
 
     return (
       <div className="col">
@@ -18,23 +30,34 @@ class DisplayTable extends Component {
           <thead>
             <tr>
               {headings.map((row) => (
-                <th>{row}</th>
+                <th key={row}>{row}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {table.map((row) => (
-              <tr>
-                {Object.keys(row).map((key) =>
-                  excludes.includes(key) === true ? (
-                    ""
-                  ) : (
-                    <td>
-                      <a href="/table">{row[key]}</a>{" "}
+            {table.map((row, index) => (
+              <tr key={"tr" + row["drinkerBeerId"]}>
+                {Object.keys(row).map((key, index1) =>
+                  excludes.includes(key) === true ? null : (
+                    <td key={"td-" + row["drinkerBeerId"] + "-" + index1}>
+                      {key === "tasted" ? (
+                        <CheckBox
+                          key={"checkbox-" + row["drinkerBeerId"]}
+                          tasted={row["tasted"]}
+                          beerId={row["drinkerBeerId"]}
+                        />
+                      ) : key === "liked" ? (
+                        <Like
+                          key={"like-" + row["drinkerBeerId"]}
+                          like={row[key]}
+                          id={row["drinkerBeerId"]}
+                        />
+                      ) : (
+                        <a href="/table">{row[key]}</a>
+                      )}
                     </td>
                   )
                 )}
-                <Like />{" "}
               </tr>
             ))}
           </tbody>

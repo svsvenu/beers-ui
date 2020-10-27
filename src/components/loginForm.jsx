@@ -1,15 +1,18 @@
 import React, { Component } from "react";
 import { properties } from "../utils/properties";
 import { callHttpPost } from "../utils/http";
+import { BeerContext } from "./beerContextProvider";
 
 class LoginForm extends Component {
   state = {
     account: { username: "", password: "" },
+    errors: {},
   };
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(this.state.account);
+    const errors = this.validate();
+
     localStorage.removeItem("jwt");
     try {
       const data = {
@@ -20,10 +23,10 @@ class LoginForm extends Component {
       const response = await callHttpPost(url, data);
 
       const jwt = response.data.jwt;
-      console.log(jwt);
       if (jwt != null) {
         localStorage.setItem("jwt", jwt);
-        this.props.updateUser(this.state.account.username);
+        this.props.updateUser();
+        this.context.setAuthentication(true);
         this.props.history.push("/all-beers");
       }
     } catch (ex) {
@@ -35,6 +38,18 @@ class LoginForm extends Component {
     const account = { ...this.state.account };
     account[e.currentTarget.name] = e.currentTarget.value;
     this.setState({ account });
+  };
+
+  validate = () => {
+    const errors = {};
+    if (this.state.account.username.trim() === "") {
+      errors.userName = "user name is required";
+      this.setState({ errors: errors });
+    }
+
+    return Object.keys(this.state.errors).length === 0
+      ? null
+      : this.state.errors;
   };
 
   render() {
@@ -53,6 +68,11 @@ class LoginForm extends Component {
               className="form-control"
             />
           </div>
+          {this.state.errors.userName && (
+            <div className="alert alert-danger">
+              {this.state.errors.userName}
+            </div>
+          )}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -60,7 +80,7 @@ class LoginForm extends Component {
               onChange={this.handleChange}
               id="password"
               name="password"
-              type="text"
+              type="password"
               className="form-control"
             />
           </div>
@@ -72,5 +92,7 @@ class LoginForm extends Component {
     );
   }
 }
+
+LoginForm.contextType = BeerContext;
 
 export default LoginForm;

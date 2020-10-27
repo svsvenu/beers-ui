@@ -31,6 +31,7 @@ class DisplayData extends Component {
                     </tr>
 
                     <tr>
+                      {" "}
                       <td>
                         <strong>
                           <span class="fa fa-bluetooth  text-primary"></span>

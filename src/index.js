@@ -5,13 +5,15 @@ import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { BeerContextProvider } from "./components/beerContextProvider";
 
+console.warn = () => { }
 ReactDOM.render(
-  <React.StrictMode>
+  <BeerContextProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
+  </BeerContextProvider>,
   document.getElementById("root")
 );
 
